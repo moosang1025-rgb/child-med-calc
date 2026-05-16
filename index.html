@@ -119,10 +119,10 @@ body {
       <label>나이</label>
       <select id="age">
         <option value="" disabled selected>나이 선택</option>
-        <option value="1">만 1세 (12~23개월)</option>
-        <option value="2">만 2세 (24~35개월)</option>
+        <option value="1">만 1~2세</option>
         <option value="3">만 3~6세</option>
-        <option value="7">만 7~12세</option>
+        <option value="7">만 7~10세</option>
+        <option value="11">만 11~14세</option>
       </select>
     </div>
     <div class="row">
@@ -256,8 +256,21 @@ function calc() {
   const tylenol = w < 11.5 ? 3.5 : w < 15.5 ? 5 : w < 22.5 ? 7.5 : w < 30 ? 10 : 15;
   document.getElementById('tylenolDos').textContent = tylenol;
 
-  const brufen = w < 13 ? 6 : w < 16 ? 8 : w < 20 ? 10 : w < 25 ? 12 : 15;
-  document.getElementById('brufenDos').textContent = brufen;
+  // 부루펜 시럽 100mg/5mL = 20mg/mL
+  // 1회 약 7.5mg/kg 기준으로 계산한 뒤, 연령별 허가 용량 범위로 제한
+  let brufen = w * 0.375;
+
+  if (age <= 2) {
+    brufen = Math.min(Math.max(brufen, 2.5), 5);
+  } else if (age <= 6) {
+    brufen = Math.min(Math.max(brufen, 5), 7.5);
+  } else if (age <= 10) {
+    brufen = Math.min(Math.max(brufen, 7.5), 10);
+  } else if (age <= 14) {
+    brufen = Math.min(Math.max(brufen, 10), 12.5);
+  }
+
+  document.getElementById('brufenDos').textContent = brufen.toFixed(1);
 
   document.getElementById('tamiDos').textContent = w <= 23 ? 10 : 12.5;
 
